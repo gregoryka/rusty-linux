@@ -1,27 +1,15 @@
 [package]
-name = "os"
+name = "rusty-linux"
 version = "0.1.0"
 edition = "2024"
-build = "build.rs"
+
 
 [dependencies]
-ovmf-prebuilt = "0.1.0-alpha.1"
-
-
-[build-dependencies]
-bootloader = "*"
-main = { path = "main", artifact = "bin", target = "x86_64-unknown-none" }
-
-[workspace]
-members = [ "main", "syscall", "uapi"]
-resolver = "3"
-[workspace.dependencies]
 bitflags = "2.9.0"
+static_assertions = "*"
 spin = "*"
 heapless = "*"
-bootloader-x86_64-common = "*"
 log = "*"
-bootloader-boot-config = "*"
 
 
 [profile.dev]
