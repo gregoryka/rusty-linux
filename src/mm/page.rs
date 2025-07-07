@@ -2,7 +2,7 @@ mod alloc;
 
 use crate::arch::{
     mm::MAX_PAGE_ORDER,
-    topology::{self, nodemask},
+    topology::{self, Nodemask},
 };
 
 use super::gfp::GFP;
@@ -27,7 +27,7 @@ impl page {
         gfp: GFP,
         order: u32,
         preferred_nid: usize,
-        nodemask: Option<nodemask>,
+        Nodemask: Option<Nodemask>,
     ) -> Option<Self> {
         //     struct page *page;
         //     unsigned int alloc_flags = ALLOC_WMARK_LOW;
