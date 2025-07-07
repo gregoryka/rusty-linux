@@ -6,6 +6,7 @@ edition = "2024"
 
 [dependencies]
 bitflags = "2.9.0"
+bitmaps = { version = "*", default-features = false}
 static_assertions = "*"
 spin = "*"
 heapless = "*"
