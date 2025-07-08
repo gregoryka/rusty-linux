@@ -1,6 +1,9 @@
 use bitflags::bitflags;
 
+use crate::mm::gfp::GFP;
+
 bitflags! {
+    #[derive(Clone, Copy)]
     pub struct AllocFlags: u32 {
         /// don't check watermarks at all
         const NO_WATERMARKS = 0x04;
@@ -43,5 +46,16 @@ bitflags! {
 #define ALLOC_HIGHATOMIC    0x200 /* Allows access to MIGRATE_HIGHATOMIC */
 #define ALLOC_KSWAPD        0x800 /* allow waking of kswapd, __GFP_KSWAPD_RECLAIM set */
          */
+    }
+}
+
+impl AllocFlags {
+    /* Must be called after current_gfp_context() which can change gfp_mask */
+    #[inline]
+    pub fn gfp_to_alloc_flags_cma(&mut self, _gfp_mask: GFP) {
+        // #ifdef CONFIG_CMA
+        //     if (gfp_migratetype(gfp_mask) == MIGRATE_MOVABLE)
+        //         alloc_flags |= ALLOC_CMA;
+        // #endif
     }
 }

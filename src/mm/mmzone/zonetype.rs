@@ -2,7 +2,7 @@ use core::mem;
 
 use static_assertions::const_assert;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub(crate) enum zone_type {
     /*
      * ZONE_DMA and ZONE_DMA32 are used when there are peripherals not able

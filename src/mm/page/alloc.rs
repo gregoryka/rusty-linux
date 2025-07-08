@@ -5,8 +5,11 @@ use crate::{
     cgroups::cpuset,
     mm::{
         gfp::GFP,
-        mmzone::{migratetype::migratetype, pglist_data::pglist_data, zone_type, zonelist::zonelist}, page::alloc::flags::AllocFlags,
-    }
+        mmzone::{
+            migratetype::migratetype, pglist_data::pglist_data, zone_type, zonelist::zonelist,
+        },
+        page::alloc::flags::AllocFlags,
+    },
 };
 
 // #ifdef CONFIG_FAIL_PAGE_ALLOC
@@ -14,10 +17,9 @@ use crate::{
 // #else
 #[inline]
 fn should_fail_alloc_page(_gfp_mask: GFP, _order: u32) -> bool {
-	false
+    false
 }
 // #endif /* CONFIG_FAIL_PAGE_ALLOC */
-
 
 /*
  * Structure for holding the mostly immutable allocation parameters passed
@@ -49,7 +51,7 @@ pub(super) struct alloc_context {
      * usable for this allocation request.
      */
     highest_zoneidx: zone_type,
-    // bool spread_dirty_pages;
+    spread_dirty_pages: bool,
 }
 
 impl alloc_context {
@@ -88,15 +90,14 @@ impl alloc_context {
          * Don't invoke should_fail logic, since it may call
          * get_random_u32() and printk() which need to spin_lock.
          */
-        if !(alloc_flags.contains(AllocFlags::TRYLOCK)) &&
-            should_fail_alloc_page(gfp_mask, order) {
-                return None;
-            }
+        if !(alloc_flags.contains(AllocFlags::TRYLOCK)) && should_fail_alloc_page(gfp_mask, order) {
+            return None;
+        }
 
-        // *alloc_flags = gfp_to_alloc_flags_cma(gfp_mask, *alloc_flags);
+        alloc_flags.gfp_to_alloc_flags_cma(gfp_mask);
 
         /* Dirty zone balancing only done in the fast path */
-        // ac->spread_dirty_pages = (gfp_mask & __GFP_WRITE);
+        let spread_dirty_pages = gfp_mask.intersects(GFP::WRITE);
 
         /*
          * The preferred zone is used for statistics but crucially it is
@@ -108,9 +109,10 @@ impl alloc_context {
 
         Some(Self {
             zonelist: zonelist,
-            nodemask: Nodemask,
+            nodemask: nodemask,
             migratetype: migratetype,
             highest_zoneidx: highest_zoneidx,
+            spread_dirty_pages: spread_dirty_pages,
         })
     }
 }
